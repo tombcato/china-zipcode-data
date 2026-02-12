@@ -1,0 +1,28 @@
+{
+  "name": "china-zipcode-adcode",
+  "version": "1.0.0",
+  "description": "本项目包含中国省市区县的 Adcode 和 Zipcode 对应数据。\r 数据来源于网络整理。",
+  "main": "src/index.js",
+  "types": "index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tombcato/china-zipcode-data.git"
+  },
+  "keywords": [
+    "china",
+    "zipcode",
+    "adcode",
+    "region",
+    "division"
+  ],
+  "author": "tombcato",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tombcato/china-zipcode-data/issues"
+  },
+  "homepage": "https://github.com/tombcato/china-zipcode-data#readme"
+}
