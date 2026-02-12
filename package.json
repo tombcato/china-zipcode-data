@@ -1,11 +1,22 @@
 {
   "name": "@tombcato/china-zipcode-data",
-  "version": "1.0.1",
-  "description": "本项目包含中国省市区县的 Adcode 和 Zipcode 对应数据。\r 数据来源于网络整理。",
+  "version": "1.0.3",
+  "description": "中国省市区县行政区划代码 (Adcode) 与邮政编码 (Zipcode) 对应数据及查询 SDK。",
   "main": "src/index.js",
-  "types": "index.d.ts",
   "type": "module",
+  "types": "index.d.ts",
+  "files": [
+    "src",
+    "china_zipcode_adcode.json",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "dev": "npx serve .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,6 +27,7 @@
     "china",
     "zipcode",
     "adcode",
+    "postalcode",
     "region",
     "division"
   ],

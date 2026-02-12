@@ -27002,7 +27002,7 @@
   {
     "code": "632525",
     "name": "贵南县",
-    "cityCode": "6325", 
+    "cityCode": "6325",
     "provinceCode": "63",
     "province": "青海省",
     "city": "海南藏族自治州",
@@ -28380,7 +28380,7 @@
     "pinyin": "ji mu nai"
   },
   {
-    "code": "659001000",
+    "code": "659001",
     "name": "石河子市",
     "cityCode": "659001",
     "provinceCode": "65",
@@ -28390,7 +28390,7 @@
     "pinyin": "shi he zi"
   },
   {
-    "code": "659002000",
+    "code": "659002",
     "name": "阿拉尔市",
     "cityCode": "659002",
     "provinceCode": "65",
@@ -28400,7 +28400,7 @@
     "pinyin": "a la er"
   },
   {
-    "code": "659003000",
+    "code": "659003",
     "name": "图木舒克市",
     "cityCode": "659003",
     "provinceCode": "65",
@@ -28410,7 +28410,7 @@
     "pinyin": "tu mu shu ke"
   },
   {
-    "code": "659004000",
+    "code": "659004",
     "name": "五家渠市",
     "cityCode": "659004",
     "provinceCode": "65",
@@ -28420,7 +28420,7 @@
     "pinyin": "wu jia qu"
   },
   {
-    "code": "659005000",
+    "code": "659005",
     "name": "北屯市",
     "cityCode": "659005",
     "provinceCode": "65",
@@ -28430,7 +28430,7 @@
     "pinyin": "bei tun"
   },
   {
-    "code": "659006000",
+    "code": "659006",
     "name": "铁门关市",
     "cityCode": "659006",
     "provinceCode": "65",
@@ -28440,7 +28440,7 @@
     "pinyin": "tie men guan"
   },
   {
-    "code": "659007000",
+    "code": "659007",
     "name": "双河市",
     "cityCode": "659007",
     "provinceCode": "65",
@@ -28450,7 +28450,7 @@
     "pinyin": "shuang he"
   },
   {
-    "code": "659008000",
+    "code": "659008",
     "name": "可克达拉市",
     "cityCode": "659008",
     "provinceCode": "65",
@@ -28460,7 +28460,7 @@
     "pinyin": "ke ke da la"
   },
   {
-    "code": "659009000",
+    "code": "659009",
     "name": "昆玉市",
     "cityCode": "659009",
     "provinceCode": "65",
@@ -28470,7 +28470,7 @@
     "pinyin": "kun yu"
   },
   {
-    "code": "659010000",
+    "code": "659010",
     "name": "胡杨河市",
     "cityCode": "659010",
     "provinceCode": "65",
@@ -28480,7 +28480,7 @@
     "pinyin": "hu yang he"
   },
   {
-    "code": "659011000",
+    "code": "659011",
     "name": "新星市",
     "cityCode": "659011",
     "provinceCode": "65",
@@ -28490,7 +28490,7 @@
     "pinyin": "xin xing"
   },
   {
-    "code": "659012000",
+    "code": "659012",
     "name": "白杨市",
     "cityCode": "659012",
     "provinceCode": "65",
@@ -28510,6 +28510,186 @@
     "pinyin": "xiang gang"
   },
   {
+    "code": "810013",
+    "name": "北区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "bei qu"
+  },
+  {
+    "code": "810014",
+    "name": "大埔区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "da pu qu"
+  },
+  {
+    "code": "810015",
+    "name": "西贡区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "xi gong qu"
+  },
+  {
+    "code": "810016",
+    "name": "沙田区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "sha tian qu"
+  },
+  {
+    "code": "810011",
+    "name": "屯门区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "tun men qu"
+  },
+  {
+    "code": "810008",
+    "name": "黄大仙区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "huang da xian qu"
+  },
+  {
+    "code": "810007",
+    "name": "九龙城区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "jiu long cheng qu"
+  },
+  {
+    "code": "810006",
+    "name": "深水埗区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "shen shui bu qu"
+  },
+  {
+    "code": "810009",
+    "name": "观塘区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "guan tang qu"
+  },
+  {
+    "code": "810005",
+    "name": "油尖旺区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "you jian wang qu"
+  },
+  {
+    "code": "810003",
+    "name": "东区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "dong qu"
+  },
+  {
+    "code": "810001",
+    "name": "中西区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "zhong xi qu"
+  },
+  {
+    "code": "810018",
+    "name": "离岛区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "li dao qu"
+  },
+  {
+    "code": "810002",
+    "name": "湾仔区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "wan zai qu"
+  },
+  {
+    "code": "810004",
+    "name": "南区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "nan qu"
+  },
+  {
+    "code": "810012",
+    "name": "元朗区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "yuan lang qu"
+  },
+  {
+    "code": "810010",
+    "name": "荃湾区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "quan wan qu"
+  },
+  {
+    "code": "810017",
+    "name": "葵青区",
+    "cityCode": "8100",
+    "provinceCode": "81",
+    "province": "香港特别行政区",
+    "city": "香港特别行政区",
+    "zipCode": "999077",
+    "pinyin": "kui qing qu"
+  },
+  {
     "code": "820000",
     "name": "澳门特别行政区",
     "cityCode": "8200",
@@ -28518,6 +28698,86 @@
     "city": "澳门特别行政区",
     "zipCode": "999078",
     "pinyin": "ao men"
+  },
+  {
+    "code": "820002",
+    "name": "花王堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "hua wang tang qu"
+  },
+  {
+    "code": "820003",
+    "name": "望德堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "wang de tang qu"
+  },
+  {
+    "code": "820006",
+    "name": "嘉模堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "jia mo tang qu"
+  },
+  {
+    "code": "820008",
+    "name": "圣方济各堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "sheng fang ji ge tang qu"
+  },
+  {
+    "code": "820001",
+    "name": "花地玛堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "hua di ma tang qu"
+  },
+  {
+    "code": "820007",
+    "name": "路氹填海区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "lu dang tian hai qu"
+  },
+  {
+    "code": "820005",
+    "name": "风顺堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "feng shun tang qu"
+  },
+  {
+    "code": "820004",
+    "name": "大堂区",
+    "cityCode": "8200",
+    "provinceCode": "82",
+    "province": "澳门特别行政区",
+    "city": "澳门特别行政区",
+    "zipCode": "999078",
+    "pinyin": "da tang qu"
   },
   {
     "code": "910000",

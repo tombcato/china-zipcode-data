@@ -30,7 +30,8 @@ export async function search(name, city, province) {
     return list.filter(item => {
         // 1. name 必须包含
         const matchName = (item.name && item.name.includes(keyName)) ||
-            (item.pinyin && item.pinyin.includes(keyName));
+            (item.pinyin && item.pinyin.includes(keyName))||
+            (item.code && item.code === keyName);
 
         if (!matchName) return false;
 

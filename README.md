@@ -1,39 +1,21 @@
 # China Zipcode Adcode Data
 
-本项目包含中国省市区县的 Adcode 和 Zipcode 对应数据。
-数据来源于网络整理。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NPM Version](https://img.shields.io/npm/v/@tombcato/china-zipcode-data.svg)](https://www.npmjs.com/package/@tombcato/china-zipcode-data)
 
-## 如何使用 (jsDelivr CDN)
 
-你可以直接通过 CDN 引用本数据，无需自行部署服务器。
+本项目包含中国省市区县的 **行政编码(Adcode)** 和 **邮政编码(Zipcode)** 对应数据。
+可与高德地图/百度地图/腾讯地图等地图数据进行关联，实现地址解析后通过Adcode获取地址邮编的功能。 
 
-### 获取最新版本
-```javascript
-// 建议使用具体版本号，例如 @1.0.0，避免缓存问题
-const url = "https://cdn.jsdelivr.net/gh/tombcato/china-zipcode-data@main/china_zipcode_adcode.json";
+可通过使用 [**整理好的JSON元数据**](./china_zipcode_adcode.json) 或者 **JS SDK** 两种方式使用。 
 
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    console.log(data);
-    // 在此处处理数据
-  });
-```
+数据来源于网络整理，并进行了一定的清洗和整理。参考：
+[2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)
+[高德全国邮政编码查询](https://ditu.amap.com/postcode/)
 
-### 模糊查询示例
-```javascript
-async function search(keyword) {
-    const response = await fetch("https://cdn.jsdelivr.net/gh/tombcato/china-zipcode-data@main/china_zipcode_adcode.json");
-    const data = await response.json();
-    return data.filter(item => 
-        item.name.includes(keyword) || 
-        item.province.includes(keyword) ||
-        item.city.includes(keyword)
-    );
-}
-``` 
-
-## 数据字段说明
+感谢开源项目提供部分数据：
+[China-zip-code-latitude-and-longitude](https://github.com/sfyc23/China-zip-code-latitude-and-longitude)
+[Administrative-divisions-of-China](https://github.com/modood/Administrative-divisions-of-China)
 
 ## JavaScript SDK 使用指南
 
@@ -41,14 +23,14 @@ async function search(keyword) {
 
 ### 安装
 ```bash
-npm install china-zipcode-adcode
+npm install @tombcato/china-zipcode-data
 ```
 
 ### 使用 (Node.js / Webpack / ESM)
 ```javascript
-import { get, search } from 'china-zipcode-adcode';
+import { get, search } from '@tombcato/china-zipcode-data';
 
-// 1. 精确查找
+// 1. 通过adcode精确查找
 const region = await get('110101');
 console.log(region);
 
@@ -63,11 +45,15 @@ const res2 = await search('朝阳', '北京');
 const res3 = await search('朝阳', null, '吉林');
 ```
 
-### 使用 (浏览器 CDN)
+### 使用 (浏览器 CDN 推荐)
 无需安装，直接引用即可。数据会自动从 jsDelivr CDN 加载。
+
+> **提示**: `@latest` 会指向最新版本，但可能有缓存延迟。生产环境建议锁定版本号 (如 `@1.0.2`)。
+
 ```html
 <script type="module">
-  import { search } from 'https://cdn.jsdelivr.net/gh/<你的GitHub用户名>/<仓库名>@main/src/index.js';
+  // 引用最新版 (使用 +esm 自动处理模块加载)
+  import { search } from 'https://cdn.jsdelivr.net/npm/@tombcato/china-zipcode-data@latest/+esm';
   
   search('朝阳').then(results => {
     console.log(results);
@@ -78,6 +64,7 @@ const res3 = await search('朝阳', null, '吉林');
 ---
 
 ## 字段说明
+- `code`: 行政编码
 - `name`: 名称
 - `province`: 省份
 - `city`: 城市
@@ -94,7 +81,7 @@ import requests
 import json
 
 # 方式 1: 在线加载
-url = "https://cdn.jsdelivr.net/gh/<你的GitHub用户名>/<仓库名>@main/china_zipcode_adcode.json"
+url = "https://cdn.jsdelivr.net/gh/tombcato/china-zipcode-data@latest/china_zipcode_adcode.json"
 data = requests.get(url).json()
 
 # 方式 2: 本地加载

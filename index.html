@@ -4,93 +4,703 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>China Zipcode SDK Demo</title>
+    <title>中国区县邮政编码（Zipcode）与行政区划代码 (Adcode) 在线查询 - 极速免费开源</title>
+    <meta name="description"
+        content="提供全国省、市、区、县级行政区划代码(Adcode)及邮政编码(Zipcode)的高速在线查询工具。支持地址解析、行政区划联动及关键词模糊搜索。开源免费，秒级响应。">
+    <meta name="keywords" content="邮编查询,邮政编码查询,行政区划代码,Adcode查询,中国区县邮编,地址解析邮编,Zipcode查询,Zipcode,Adcode,PostalCode">
+    <meta name="author" content="ChinaZipcode">
+
+    <!-- Open Graph (FaceBook / WeChat / etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="中国区县邮政编码与行政区划代码在线查询">
+    <meta property="og:description" content="极速查询全国行政区划代码(Adcode)与邮编(Zipcode)，支持地址自动解析。">
+    <meta property="og:image" content="china_map.jpg">
+    <meta property="og:url" content="https://yourdomain.com">
+
+    <!-- JSON-LD Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "中国邮编Zipcode与区域编码Adcode查询工具",
+      "description": "提供全国省市区县邮政编码与行政区划代码的高速在线查询，支持地址解析与联动选择。",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CNY"
+      }
+    }
+    </script>
+
+    <!-- 1. Tailwind CSS (UI) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. Alpine.js (交互) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- 3. 高德地图 JS API (地图背景 & Geocoding) -->
+    <!-- 请替换这里的 key 和 securityCode -->
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode: 'b0c19ae728c712df48da9e90e4d4e41c', // 如果不在乎安全性演示，可暂空
+        }
+    </script>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=6c710e6ac2860541fd42126b9ab41374&plugin=AMap.Geocoder"></script>
+
+    <!-- 4. 我们的 SDK (数据) -->
+    <script type="module">
+        import { search, get } from 'https://cdn.jsdelivr.net/npm/@tombcato/china-zipcode-data@latest/+esm';
+        window.ChinaZipcode = { search, get };
+    </script>
+
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        /* 自定义高德地图样式覆盖，隐藏 Logo */
+        .amap-logo,
+        .amap-copyright {
+            display: none !important;
         }
 
-        input {
-            padding: 8px;
-            width: 300px;
-            font-size: 16px;
+        /* 毛玻璃背景 (Light Mode) */
+        .glass-light {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            /* Soft shadow */
         }
 
-        button {
-            padding: 8px 16px;
-            font-size: 16px;
-            cursor: pointer;
+        /* Input focus ring custom color */
+        .ring-brand {
+            --tw-ring-color: rgba(59, 130, 246, 0.5);
         }
 
-        #results {
-            margin-top: 20px;
+        [x-cloak] {
+            display: none !important;
         }
 
-        .item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
+        /* 防止滚动条出现时页面抖动 */
+        html {
+            scrollbar-gutter: stable;
         }
 
-        .code {
-            color: #666;
-            font-size: 0.9em;
+        /* 全局滚动条样式优化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+            background-clip: content-box;
         }
     </style>
 </head>
 
-<body>
-    <h1>中国邮编数据</h1>
-    <p>仅需加载 JS SDK，数据自动从 jsDelivr CDN 获取。</p>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased overflow-x-hidden" x-data="app()">
 
-    <div>
-        <input type="text" id="searchInput" placeholder="输入地名、拼音或邮编">
-        <button onclick="doSearch()">搜索</button>
+    <!-- Layer 1: 静态地图背景 -->
+    <div id="map-container" class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style="background-image: url('china_map.jpg');"></div>
+
+    <!-- Layer 2: 毛玻璃遮罩 (再次强化白色质感，呈现高级乳白感) -->
+    <div class="fixed inset-0 z-10 bg-white/40 backdrop-blur-[12px] pointer-events-none"></div>
+
+    <!-- Layer 3: 内容层 -->
+    <div class="relative z-20 min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="container mx-auto px-6 py-6 flex justify-between items-center max-w-6xl">
+            <div class="flex items-center space-x-3">
+                <!-- SVG Logo -->
+                <svg t="1770911119874" class="w-10 h-10 text-gray-800" viewBox="0 0 1024 1024" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" p-id="8439">
+                    <path
+                        d="M636.48 644.224c18.56 0 34.048 15.232 34.048 33.408a33.92 33.92 0 0 1-33.92 33.472H251.712a33.92 33.92 0 0 1-33.92-33.472 33.92 33.92 0 0 1 33.92-33.408h384.64z m-384.64-44.544a33.664 33.664 0 0 1-33.984-33.408 33.92 33.92 0 0 1 33.92-33.408h194.56c18.56 0 33.984 15.168 33.984 33.408a33.92 33.92 0 0 1-33.92 33.408h-194.56z m-101.952 262.912c-47.36 0-85.888-37.952-85.888-84.608V243.2c0-46.592 38.528-84.544 85.888-84.544h724.224c47.36 0 85.888 37.952 85.888 84.544v534.848c0 46.656-38.528 84.608-85.888 84.608H149.888z m22.592-646.4c-27.52 0-49.92 22.144-49.92 49.28v490.24c0 27.136 22.4 49.216 49.92 49.216h679.04c27.52 0 49.92-22.08 49.92-49.216v-490.24a49.664 49.664 0 0 0-49.92-49.28H172.48z m611.2 93.824c12.16 0 22.592 9.728 22.592 22.272v102.464a22.208 22.208 0 0 1-22.656 22.336h-104.128c-8.96 0-22.592-9.792-22.592-22.336V332.288c0-12.544 9.92-22.272 22.592-22.272h104.128z"
+                        fill="currentColor" p-id="8440"></path>
+                </svg>
+                <span class="text-xl font-bold tracking-tight text-gray-800">ChinaZipcode</span>
+            </div>
+            <a href="https://github.com/tombcato/china-zipcode-data" target="_blank"
+                class="bg-white/80 backdrop-blur-sm border border-gray-200 px-4 py-2 rounded-full hover:bg-gray-50 hover:shadow-sm transition flex items-center space-x-2 text-gray-700 shadow-sm">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd"
+                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium">GitHub</span>
+            </a>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="flex-grow flex flex-col items-center container mx-auto px-4 text-center pt-24 pb-24 relative z-30">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 text-gray-900 tracking-tight">
+                中国省市区县<span class="text-blue-600">邮编查询</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl font-light">
+                基于 CDN 加载 或 本地JSON导入，建立Adcode与Zipcode的关联
+            </p>
+
+            <!-- Search Card (White Theme) -->
+            <div class="glass-light rounded-2xl p-6 w-full max-w-2xl relative" x-cloak
+                @click.outside="result = null; error = null">
+
+                <!-- Tabs -->
+                <div class="flex space-x-2 bg-gray-100 p-1.5 rounded-xl mb-6 shadow-inner">
+                    <button @click="switchTab('address')"
+                        :class="tab === 'address' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300">地址解析</button>
+                    <button @click="switchTab('region')"
+                        :class="tab === 'region' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300">省市区联动</button>
+                    <button @click="switchTab('adcode')"
+                        :class="tab === 'adcode' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300">Adcode
+                        搜索</button>
+                    <button @click="switchTab('fuzzy')"
+                        :class="tab === 'fuzzy' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300">模糊搜索</button>
+                </div>
+
+                <!-- Input Area (Relative for floating results) -->
+                <div>
+                    <!-- Input Wrapper (Relative for Button) -->
+                    <div class="relative group">
+                        <!-- Standard Search Input -->
+                        <div x-show="tab !== 'region'" class="relative">
+                            <input type="text" x-model="query" @keydown.enter="doSearch()" :placeholder="placeholder"
+                                class="w-full bg-white text-gray-900 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-lg placeholder-gray-400 shadow-sm group-hover:shadow-md">
+                            <button @click="doSearch()"
+                                class="absolute right-2 top-2 bottom-2 bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg font-medium transition flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95 transform duration-150"
+                                :disabled="loading">
+                                <span x-show="!loading">搜索</span>
+                                <svg x-show="loading" class="animate-spin h-5 w-5 text-white" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Region Picker UI (Moved inside the relative wrapper) -->
+                        <div x-show="tab === 'region'" class="grid grid-cols-3 gap-3 px-1 pb-1" x-transition>
+                            <div class="relative">
+                                <select x-model="selectedP" @change="onProvinceChange"
+                                    class="w-full bg-white text-gray-700 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm appearance-none cursor-pointer">
+                                    <option value="">选择省份</option>
+                                    <template x-for="p in provinces" :key="p.id">
+                                        <option :value="p.id" x-text="p.name"></option>
+                                    </template>
+                                </select>
+                                <div
+                                    class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <select x-model="selectedC" @change="onCityChange" :disabled="!selectedP"
+                                    class="w-full bg-white text-gray-700 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-400">
+                                    <option value="">选择城市</option>
+                                    <template x-for="c in filteredCities" :key="c.id">
+                                        <option :value="c.id" x-text="c.name"></option>
+                                    </template>
+                                </select>
+                                <div
+                                    class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <select x-model="selectedD" @change="onDistrictChange" :disabled="!selectedC"
+                                    class="w-full bg-white text-gray-700 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-400">
+                                    <option value="">选择区县</option>
+                                    <template x-for="d in filteredDistricts" :key="d.id">
+                                        <option :value="d.id" x-text="d.name"></option>
+                                    </template>
+                                </select>
+                                <div
+                                    class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fuzzy Search Options (Moved inside the relative wrapper) -->
+                        <div x-show="tab === 'fuzzy'" class="flex space-x-3 px-1 mt-3 pb-1" x-transition>
+                            <div class="flex-1 relative">
+                                <div
+                                    class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <input type="text" x-model="province" @keydown.enter="doSearch()" placeholder="省份 (可选)"
+                                    class="w-full bg-white text-gray-700 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm">
+                            </div>
+                            <div class="flex-1 relative">
+                                <div
+                                    class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <input type="text" x-model="city" @keydown.enter="doSearch()" placeholder="城市 (可选)"
+                                    class="w-full bg-white text-gray-700 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all shadow-sm">
+                            </div>
+                        </div>
+
+                        <!-- Floating Results Implementation (Anchored to Input Wrapper) -->
+                        <div x-show="result || error" x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 translate-y-2"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-2"
+                            class="absolute top-full left-0 right-0 mt-3 z-50 bg-white rounded-xl shadow-xl border border-gray-100 text-left ring-1 ring-black/5">
+
+                            <!-- Error Message -->
+                            <div x-show="error"
+                                class="p-4 bg-red-50 text-red-600 text-sm border-l-4 border-red-500 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span x-text="error"></span>
+                            </div>
+
+                            <!-- Single Result -->
+                            <div x-show="!error && !Array.isArray(result) && result" class="p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 tracking-tight"
+                                            x-text="result?.name">
+                                        </h3>
+                                        <p class="text-sm text-gray-500 mt-0.5 flex items-center">
+                                            <svg class="w-3.5 h-3.5 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                </path>
+                                            </svg>
+                                            <span x-text="(result?.province || '') + ' ' + (result?.city || '')"></span>
+                                        </p>
+                                    </div>
+                                    <div @click="copyText(result?.zipCode)"
+                                        class="flex flex-col items-center bg-blue-50 px-4 py-1.5 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-100 transition-all active:scale-95 group/zip relative">
+                                        <div
+                                            class="text-[9px] text-blue-500 uppercase tracking-tighter font-bold mb-0.5 group-hover/zip:text-blue-600">
+                                            Zipcode</div>
+                                        <div class="text-xl font-mono text-blue-600 font-bold tracking-tight"
+                                            x-text="result?.zipCode || 'N/A'"></div>
+                                        <!-- Tooltip feedback -->
+                                        <div x-show="copied" x-transition
+                                            class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[60]">
+                                            已复制!
+                                            <!-- Tooltip Arrow -->
+                                            <div
+                                                class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-800">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-sm">
+                                    <div class="bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                                        <span
+                                            class="text-gray-400 block text-[10px] uppercase font-semibold mb-0.5">Adcode</span>
+                                        <span class="font-mono text-gray-700 font-medium" x-text="result?.code"></span>
+                                    </div>
+                                    <div class="bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                                        <span
+                                            class="text-gray-400 block text-[10px] uppercase font-semibold mb-0.5">Pinyin</span>
+                                        <span class="text-gray-700 font-medium truncate" x-text="result?.pinyin"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Multiple Results List -->
+                            <div x-show="!error && Array.isArray(result)"
+                                class="max-h-64 overflow-y-auto custom-scroll divide-y divide-gray-100">
+                                <template x-for="item in result" :key="item.code">
+                                    <div @click="selectItem(item)"
+                                        class="p-4 hover:bg-blue-50/50 cursor-pointer transition flex justify-between items-center group border-b border-gray-50 last:border-0">
+                                        <div class="pr-4 flex-grow">
+                                            <div class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors"
+                                                x-text="item.name"></div>
+                                            <div class="text-[11px] text-gray-400 mt-1.5 flex items-center">
+                                                <svg class="w-3 h-3 mr-1 opacity-60" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                    </path>
+                                                </svg>
+                                                <span x-text="item.province + ' ' + item.city"></span>
+                                            </div>
+                                            <div class="text-[10px] text-gray-400 font-mono mt-1"
+                                                x-text="'ADCODE: ' + item.code"></div>
+                                        </div>
+                                        <div @click.stop="copyText(item.zipCode)"
+                                            class="bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 min-w-[85px] text-center cursor-pointer hover:bg-blue-100 transition-all active:scale-95 group/zip relative">
+                                            <div
+                                                class="text-[9px] text-blue-500 uppercase tracking-tighter font-bold mb-0.5 group-hover/zip:text-blue-600">
+                                                Zipcode</div>
+                                            <div class="text-base font-mono text-blue-600 font-bold"
+                                                x-text="item.zipCode"></div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="result && result.length === 0"
+                                    class="text-center text-gray-400 py-8 text-sm">
+                                    没有找到相关结果
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Hint Text (Outside of relative group) -->
+                    <div class="px-2 mt-3 mb-1 text-xs text-gray-400 text-left flex items-start space-x-1.5"
+                        x-show="true" x-transition>
+                        <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 opacity-70" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p x-text="hint" class="leading-relaxed"></p>
+                    </div>
+                </div> <!-- Close Input Area -->
+            </div> <!-- Close Search Card -->
+        </main>
+
+        <!-- Features Section (Transparent & Medium) -->
+        <section class="py-12 relative z-20">
+            <div class="container mx-auto px-6 grid md:grid-cols-3 gap-10 max-w-5xl">
+                <!-- Feature 1 -->
+                <div class="flex items-start space-x-5 group transition duration-300">
+                    <div
+                        class="flex-shrink-0 w-14 h-14 bg-blue-50/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white/60">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">极速响应</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed opacity-80">基于 CDN 智能分发，核心库体积极小，查询微秒级响应。</p>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="flex items-start space-x-5 group transition duration-300">
+                    <div
+                        class="flex-shrink-0 w-14 h-14 bg-purple-50/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white/60">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-1.447-.894L15 7m0 13V7m0 0L9.553 2.276A1 1 0 0110 3.382l5 2.5">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">精准数据</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed opacity-80">基于最新2023年大陆 3000+ 区县级行政区划与邮编统计数据。</p>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="flex items-start space-x-5 group transition duration-300">
+                    <div
+                        class="flex-shrink-0 w-14 h-14 bg-green-50/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-green-500 group-hover:bg-green-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white/60">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">开源免费</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed opacity-80">MIT 协议完全开源。JSON数据支持多种开发环境。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-10 text-center text-gray-400 text-sm relative z-20">
+            <div class="container mx-auto max-w-6xl">
+                <p>&copy; 2026 ChinaZipcode. Open sourced under MIT License.</p>
+                <p class="mt-2 text-[10px] opacity-60">数据来源于网络整理与高德地图 API 辅助校对。</p>
+            </div>
+        </footer>
     </div>
 
-    <div id="results"></div>
+    <!-- Logic -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                tab: 'address', // address, adcode, fuzzy
+                query: '',
+                province: '',
+                city: '',
+                loading: false,
+                result: null,
+                error: null,
+                map: null,
+                geocoder: null,
+                copied: false,
 
-    <!-- 使用发布后的 CDN 版本 -->
-    <script type="module">
-        // 引用 NPM 包中的源码 (也可以引用打包后的 dist 文件如果做了打包)
-        import { search, get } from 'https://cdn.jsdelivr.net/npm/@tombcato/china-zipcode-data@1.0.0/src/index.js';
+                // Region Picker State
+                allRegionData: [],
+                provinces: [],
+                filteredCities: [],
+                filteredDistricts: [],
+                selectedP: '',
+                selectedC: '',
+                selectedD: '',
 
-        // 挂载到 window 方便演示
-        window.doSearch = async function () {
-            const keyword = document.getElementById('searchInput').value;
-            if (!keyword) return;
+                get placeholder() {
+                    if (this.tab === 'address') return '请输入地址 (例如: 北京市朝阳区望京SOHO)';
+                    if (this.tab === 'adcode') return '请输入6位行政区划代码 (例如: 110105)';
+                    return '请输入关键词 (例如: 朝阳 / chao yang)';
+                },
 
-            document.getElementById('results').innerHTML = '查询中...';
+                get hint() {
+                    if (this.tab === 'address') return '该Demo基于高德地图解析地址获取Adcode，再查询对应Zipcode，仅查询到区县级别邮编';
+                    if (this.tab === 'region') return '通过省市区三级联动选择，直接定位指定行政区划并查询对应邮编';
+                    if (this.tab === 'adcode') return 'Adcode为区域行政编码，地图可获取Adcode，也可查询中华人民共和国县以上行政区划代码';
+                    return '关键词必填';
+                },
 
-            try {
-                const start = performance.now();
-                const list = await search(keyword);
-                const end = performance.now();
+                init() {
+                    // 等待高德 API 加载完成
+                    if (window.AMap) {
+                        this.initMap();
+                    } else {
+                        setTimeout(() => this.initMap(), 1000);
+                    }
+                    this.loadRegionData();
+                },
 
-                let html = `<p>找到 ${list.length} 条结果 (耗时 ${(end - start).toFixed(2)}ms)</p>`;
+                initMap() {
+                    // 仅初始化 Geocoder，不创建交互地图以节省 API 额度
+                    try {
+                        if (!window.AMap) {
+                            throw new Error("高德地图 SDK 未加载");
+                        }
+                        AMap.plugin('AMap.Geocoder', () => {
+                            this.geocoder = new AMap.Geocoder();
+                        });
+                    } catch (e) {
+                        console.error('AMap Geocoder init failed:', e);
+                    }
+                },
 
-                list.slice(0, 50).forEach(item => {
-                    html += `
-                        <div class="item">
-                            <div><strong>${item.name}</strong> (${item.province} ${item.city})</div>
-                            <div class="code">Adcode: ${item.code} | Zipcode: ${item.zipCode}</div>
-                        </div>
-                    `;
-                });
+                switchTab(tab) {
+                    this.tab = tab;
+                    this.query = '';
+                    this.province = '';
+                    this.city = '';
+                    this.result = null;
+                    this.error = null;
+                    // Reset selection if switching to region
+                    if (tab === 'region') {
+                        this.selectedP = '';
+                        this.selectedC = '';
+                        this.selectedD = '';
+                        this.filteredCities = [];
+                        this.filteredDistricts = [];
+                    }
+                },
 
-                if (list.length > 50) {
-                    html += '<p>...仅显示前 50 条...</p>';
+                async doSearch() {
+                    if (!this.query) return;
+                    this.loading = true;
+                    this.result = null;
+                    this.error = null;
+
+                    try {
+                        if (this.tab === 'address') {
+                            await this.searchByAddress();
+                        } else if (this.tab === 'adcode') {
+                            await this.searchByAdcode();
+                        } else {
+                            await this.searchFuzzy();
+                        }
+                    } catch (e) {
+                        this.error = e.message || '查询出错';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // 1. 地址解析 -> Adcode -> SDK
+                async searchByAddress() {
+                    if (!this.geocoder) {
+                        this.loading = false;
+                        this.error = '地图组件未就绪';
+                        return;
+                    }
+
+                    this.geocoder.getLocation(this.query, async (status, result) => {
+                        this.loading = false;
+                        if (status === 'complete' && result.geocodes.length) {
+                            const geo = result.geocodes[0];
+                            const adcode = geo.adcode;
+
+                            // 调用 SDK 查询详情
+                            const sdkResult = await window.ChinaZipcode.get(adcode);
+
+                            if (sdkResult) {
+                                this.result = sdkResult;
+                            } else {
+                                // SDK 没查到，兜底显示高德数据
+                                this.result = {
+                                    name: geo.formattedAddress,
+                                    code: adcode,
+                                    province: geo.province,
+                                    city: geo.city,
+                                    zipCode: '暂无数据',
+                                    pinyin: '-'
+                                };
+                            }
+                        } else {
+                            this.error = '地址解析失败，请尝试更详细的地址';
+                        }
+                    });
+                },
+
+                // 2. 精确 Adcode 搜索
+                async searchByAdcode() {
+                    const res = await window.ChinaZipcode.get(this.query);
+                    this.loading = false;
+                    if (res) {
+                        this.result = res;
+                        // 尝试根据省市区名字定位地图（因为只有 Adcode 没有坐标）
+                        if (this.geocoder) {
+                            this.geocoder.getLocation(res.province + res.city + res.name, (status, result) => {
+                                if (status === 'complete' && result.geocodes.length) {
+                                    this.map.setCenter(result.geocodes[0].location);
+                                    this.map.setZoom(11);
+                                }
+                            });
+                        }
+                    } else {
+                        this.error = '未找到该 Adcode 对应的数据';
+                    }
+                },
+
+                // 3. 模糊搜索
+                async searchFuzzy() {
+                    const res = await window.ChinaZipcode.search(this.query, this.city, this.province);
+                    this.loading = false;
+                    this.result = res; // 返回数组
+                },
+
+                // Region Picker Methods
+                async loadRegionData() {
+                    try {
+                        const res = await fetch('ok_data_level3.csv');
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        const text = await res.text();
+                        const lines = text.split('\n').filter(l => l.trim());
+                        const headers = lines[0].split(',');
+
+                        this.allRegionData = lines.slice(1).map(line => {
+                            const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                            const obj = {};
+                            headers.forEach((h, i) => {
+                                obj[h.trim()] = parts[i]?.replace(/"/g, '').trim();
+                            });
+                            return obj;
+                        });
+
+                        this.provinces = this.allRegionData.filter(d => d.deep === '0');
+                    } catch (e) {
+                        console.error('Failed to load region data:', e);
+                        this.error = '无法加载联动数据，请确保在 Web 服务器环境下运行 (npm run dev)';
+                    }
+                },
+
+                onProvinceChange() {
+                    this.selectedC = '';
+                    this.selectedD = '';
+                    this.filteredDistricts = [];
+                    this.result = null;
+                    if (!this.selectedP) return;
+                    this.filteredCities = this.allRegionData.filter(d => d.pid === this.selectedP && d.deep === '1');
+                },
+
+                onCityChange() {
+                    this.selectedD = '';
+                    this.result = null;
+                    if (!this.selectedC) return;
+                    this.filteredDistricts = this.allRegionData.filter(d => d.pid === this.selectedC && d.deep === '2');
+                },
+
+                async onDistrictChange() {
+                    if (!this.selectedD) return;
+                    this.loading = true;
+                    this.result = null;
+                    this.error = null;
+
+                    try {
+                        const res = await window.ChinaZipcode.get(this.selectedD);
+                        if (res) {
+                            this.selectItem(res);
+                        } else {
+                            this.error = 'SDK 库中暂未收录该区县数据';
+                        }
+                    } catch (e) {
+                        this.error = '查询失败';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // 选择搜索结果列表中的一项
+                selectItem(item) {
+                    this.result = item; // 变为单项展示
+                },
+
+                // 复制文本到剪贴板
+                copyText(text) {
+                    if (!text || text === 'N/A' || text === '暂无数据') return;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.copied = true;
+                        setTimeout(() => this.copied = false, 2000);
+                    });
                 }
-
-                document.getElementById('results').innerHTML = html;
-            } catch (e) {
-                document.getElementById('results').innerHTML = `<p style="color:red">错误: ${e.message}</p>`;
-                console.error(e);
-            }
-        }
+            }));
+        });
     </script>
+    </style>
 </body>
 
 </html>
