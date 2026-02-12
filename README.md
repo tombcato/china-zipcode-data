@@ -4,18 +4,17 @@
 [![NPM Version](https://img.shields.io/npm/v/@tombcato/china-zipcode-data.svg)](https://www.npmjs.com/package/@tombcato/china-zipcode-data)
 
 
-本项目包含中国省市区县的 **行政编码(Adcode)** 和 **邮政编码(Zipcode)** 对应数据。
-可与高德地图/百度地图/腾讯地图等地图数据进行关联，实现地址解析后通过Adcode获取地址邮编的功能。 
+本项目包含中国省市区县的 **行政编码(Adcode)** 和 **邮政编码(Zipcode)** 对应数据。  
+可通过使用 [**整理好的JSON元数据**](./china_zipcode_adcode.json) 或者 **JS SDK** 两种方式使用。  
+也可与高德地图/百度地图/腾讯地图等联动实现地址解析后通过Adcode获取地址邮编。 
 
-可通过使用 [**整理好的JSON元数据**](./china_zipcode_adcode.json) 或者 **JS SDK** 两种方式使用。 
+数据来源于网络整理，并进行了一定的清洗和整理。参考： 
+[2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)  
+[高德全国邮政编码查询](https://ditu.amap.com/postcode/)  
 
-数据来源于网络整理，并进行了一定的清洗和整理。参考：
-[2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)
-[高德全国邮政编码查询](https://ditu.amap.com/postcode/)
-
-感谢开源项目提供部分数据：
-[China-zip-code-latitude-and-longitude](https://github.com/sfyc23/China-zip-code-latitude-and-longitude)
-[Administrative-divisions-of-China](https://github.com/modood/Administrative-divisions-of-China)
+感谢开源项目提供部分数据：  
+[China-zip-code-latitude-and-longitude](https://github.com/sfyc23/China-zip-code-latitude-and-longitude)  
+[Administrative-divisions-of-China](https://github.com/modood/Administrative-divisions-of-China)  
 
 ## JavaScript SDK 使用指南
 
