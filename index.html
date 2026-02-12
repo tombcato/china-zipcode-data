@@ -1,22 +1,50 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>China Zipcode SDK Demo</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        input { padding: 8px; width: 300px; font-size: 16px; }
-        button { padding: 8px 16px; font-size: 16px; cursor: pointer; }
-        #results { margin-top: 20px; }
-        .item { border-bottom: 1px solid #eee; padding: 10px 0; }
-        .code { color: #666; font-size: 0.9em; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        input {
+            padding: 8px;
+            width: 300px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+
+        .code {
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
 </head>
+
 <body>
-    <h1>中国行政区划查询 Demo</h1>
+    <h1>中国邮编数据</h1>
     <p>仅需加载 JS SDK，数据自动从 jsDelivr CDN 获取。</p>
-    
+
     <div>
         <input type="text" id="searchInput" placeholder="输入地名、拼音或邮编">
         <button onclick="doSearch()">搜索</button>
@@ -24,26 +52,25 @@
 
     <div id="results"></div>
 
-    <!-- 模拟 UMD 引用 (实际开发中应使用打包后的文件) -->
+    <!-- 使用发布后的 CDN 版本 -->
     <script type="module">
-        // 由于没有构建步骤，这里直接 import 源码演示 ESM 模块加载
-        // 注意：浏览器直接运行 ESM 需要 http服务器
-        import { search, get } from './src/index.js';
+        // 引用 NPM 包中的源码 (也可以引用打包后的 dist 文件如果做了打包)
+        import { search, get } from 'https://cdn.jsdelivr.net/npm/@tombcato/china-zipcode-data@1.0.0/src/index.js';
 
         // 挂载到 window 方便演示
-        window.doSearch = async function() {
+        window.doSearch = async function () {
             const keyword = document.getElementById('searchInput').value;
             if (!keyword) return;
 
             document.getElementById('results').innerHTML = '查询中...';
-            
+
             try {
                 const start = performance.now();
                 const list = await search(keyword);
                 const end = performance.now();
 
                 let html = `<p>找到 ${list.length} 条结果 (耗时 ${(end - start).toFixed(2)}ms)</p>`;
-                
+
                 list.slice(0, 50).forEach(item => {
                     html += `
                         <div class="item">
@@ -52,7 +79,7 @@
                         </div>
                     `;
                 });
-                
+
                 if (list.length > 50) {
                     html += '<p>...仅显示前 50 条...</p>';
                 }
@@ -65,4 +92,5 @@
         }
     </script>
 </body>
+
 </html>

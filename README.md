@@ -52,9 +52,15 @@ import { get, search } from 'china-zipcode-adcode';
 const region = await get('110101');
 console.log(region);
 
-// 2. 模糊搜索
-const results = await search('朝阳');
-console.log(results);
+// 2. 搜索 (支持组合条件)
+// 搜索 "朝阳"
+const res1 = await search('朝阳'); 
+
+// 搜索 "朝阳" 且城市包含 "北京"
+const res2 = await search('朝阳', '北京');
+
+// 搜索 "朝阳" 且省份包含 "吉林"
+const res3 = await search('朝阳', null, '吉林');
 ```
 
 ### 使用 (浏览器 CDN)

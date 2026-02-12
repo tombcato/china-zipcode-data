@@ -15,10 +15,12 @@ export interface Region {
 export function get(code: string): Promise<Region | null>;
 
 /**
- * 模糊搜索 (匹配名称、拼音、邮编)
- * @param keyword 关键词
+ * 组合条件搜索
+ * @param name 必需，区县名称或关键词
+ * @param city 可选，城市名称
+ * @param province 可选，省份名称
  */
-export function search(keyword: string): Promise<Region[]>;
+export function search(name: string, city?: string, province?: string): Promise<Region[]>;
 
 /**
  * 获取所有数据

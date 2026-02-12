@@ -6,16 +6,24 @@ let data = null;
 // CDN 地址模板，发布时请替换用户名和仓库名
 const CDN_URL = "https://cdn.jsdelivr.net/gh/tombcato/china-zipcode-data@main/china_zipcode_adcode.json";
 
-async function loadData() {
+export async function loadData() {
     if (data) return data;
 
     if (isNode) {
         // Node.js 环境：读取本地文件
         try {
-            const fs = require('fs');
-            const path = require('path');
+            // 在 ESM 中使用 fs 需要 import
+            const fs = await import('fs');
+            const path = await import('path');
+            const { fileURLToPath } = await import('url');
+
+            // 获取 __dirname 的 ESM 写法
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
+
             // 假设数据文件在 SDK 根目录下
             const filePath = path.join(__dirname, '../china_zipcode_adcode.json');
+
             if (fs.existsSync(filePath)) {
                 const raw = fs.readFileSync(filePath, 'utf-8');
                 data = JSON.parse(raw);
@@ -49,11 +57,6 @@ async function fetchFromCDN() {
  * 手动设置数据（用于预加载或自定义数据源）
  * @param {Array} customData 
  */
-function setData(customData) {
+export function setData(customData) {
     data = customData;
 }
-
-module.exports = {
-    loadData,
-    setData
-};
