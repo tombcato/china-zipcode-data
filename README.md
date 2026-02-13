@@ -12,13 +12,35 @@
 ![Demo](demo_address.png)
 
 
-数据来源于网络整理，并进行了一定的清洗和整理。参考： 
-[2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)  
-[高德全国邮政编码查询](https://ditu.amap.com/postcode/)  
+数据来源于网络整理，并进行了一定的清洗和整理。参考：   
+[2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)   
+[高德全国邮政编码查询](https://ditu.amap.com/postcode/)   
 
 感谢开源项目提供部分数据：  
 [China-zip-code-latitude-and-longitude](https://github.com/sfyc23/China-zip-code-latitude-and-longitude)  
 [Administrative-divisions-of-China](https://github.com/modood/Administrative-divisions-of-China)  
+
+## 为什么需要这个数据？
+
+### 1. 开发时邮编获取的困局
+
+调研了下市面上的邮编数据API, 通过地址信息获取邮编需要付费限免次数有限\
+通过AI获取的邮编数据幻觉严重，实测多个模型都无法返回准确邮编\
+有很多网页提供三级联动查询区域邮编，但无法通过api接入项目\
+有一些开源数据但内行政区划老旧不准确，获取邮编还需要手动拆分输入地址的省市区来进行匹配，不准还麻烦
+
+### 2. 地图 API 的“断层”
+
+在使用地图 SDK 时，最常用的流程是：
+`输入地址 -> 地图地理编码 -> 行政代码(Adcode) / 经纬度 / 格式化后的地址等`。
+然而，邮编作为一个相对传统的字段，在现代地图服务中的权重在降低。即使拿到了详细地址以及行政区域编码(Adcode)，也无法获取到对应的邮编。
+
+### 3. 数据的时效性问题
+
+邮编数据，要么是 2018 年之前的陈旧版本，不少是付费下载的。\
+行政区划数据，随着近年来国内行政区划的频繁调整（撤县设区、新区合并），**最新对应数据**变得非常稀缺。
+
+> 注意：自2024年10月起，国家统计局继续公开《关于统计上划分城乡的规定》《统计用区划代码和城乡划分代码编制规则》等统计标准方法，不再公开具体相关代码
 
 ## JavaScript SDK 使用指南
 
