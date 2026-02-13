@@ -9,6 +9,9 @@
 也可与高德地图/百度地图/腾讯地图等联动实现地址解析后通过Adcode获取地址邮编。 
 详细可参考 [DEMO在线体验](https://tombcato.github.io/china-zipcode-data/)  
 
+![Demo](demo_address.png)
+
+
 数据来源于网络整理，并进行了一定的清洗和整理。参考： 
 [2023年中华人民共和国县以上行政区划代码](https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html)  
 [高德全国邮政编码查询](https://ditu.amap.com/postcode/)  

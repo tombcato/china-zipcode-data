@@ -396,7 +396,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p x-text="hint" class="leading-relaxed"></p>
+                        <p x-html="hint" class="leading-relaxed"></p>
                     </div>
                 </div> <!-- Close Input Area -->
             </div> <!-- Close Search Card -->
@@ -431,7 +431,8 @@
                     </div>
                     <div>
                         <h3 class="text-base font-bold text-gray-900 mb-1">精准数据</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed opacity-80">基于最新2023年大陆 3000+ 区县级行政区划与邮编统计数据。</p>
+                        <p class="text-gray-500 text-sm leading-relaxed opacity-80">基于最新2023年大陆 3000+ 区县级行政区划与邮编统计数据。
+                        </p>
                     </div>
                 </div>
                 <!-- Feature 3 -->
@@ -494,7 +495,7 @@
                 get hint() {
                     if (this.tab === 'address') return '该Demo基于高德地图解析地址获取Adcode，再查询对应Zipcode，仅查询到区县级别邮编';
                     if (this.tab === 'region') return '通过省市区三级联动选择，直接定位指定行政区划并查询对应邮编';
-                    if (this.tab === 'adcode') return 'Adcode为区域行政编码，地图可获取Adcode，也可查询中华人民共和国县以上行政区划代码';
+                    if (this.tab === 'adcode') return 'Adcode为区域行政编码，地图可获取Adcode，也可查询 <a href="https://www.mca.gov.cn/mzsj/xzqh/2023/202301xzqh.html" target="_blank" class="text-blue-500 hover:underline">2023年中华人民共和国县以上行政区划代码</a>';
                     return '关键词必填';
                 },
 
